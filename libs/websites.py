@@ -1,26 +1,45 @@
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
 
-import time
+from libs import scrape, io
+
+import time, os
+
+DIRECTORY_PATH = "."
 
 # Website Scanning
+def FORMAT_1_SCRAPE(base_url, argument):
+	print(argument)
+	response = urlopen(argument)
+	soup = BeautifulSoup(response, "html.parser")
+	page_urls = []
+	for link in soup.findAll('a'):
+		href = link.get('href')
+		if href != None and href.find("/post/show/") != -1:
+			page_urls.append(base_url + href)
+
+	for page_url in page_urls:
+		for url in scrape.ScrapeMedia( page_url):
+			print(page_url)
+			scrape.DownloadImageMedia(url, filepath=DIRECTORY_PATH)
+		time.sleep(1)
+
 def KONACHAN_SITE(argument):
 	print("KONACHAN - ", argument)
-	time.sleep(3)
+	return FORMAT_1_SCRAPE("https://konachan.com", argument)
 
 def YANDERE_SITE(argument):
 	print("YANDERE - ", argument)
-	time.sleep(3)
+	return FORMAT_1_SCRAPE("https://yande.re", argument)
 
 def DANBOORU_SITE(argument):
 	print("DANBOORU - ", argument)
-	time.sleep(3)
-
-def GELBOORU_SITE(argument):
-	print("GELBOORU - ", argument)
-	time.sleep(3)
+	return FORMAT_1_SCRAPE("https://danbooru.donmai.us", argument)
 
 # Website URL Constructors
 def FORMAT_1_GEN(baseURL : str, total_pages : int, tag_list : list[str]) -> list[str]:
 	url_array = []
+	tag_list = "+".join(tag_list)
 	for page_number in range(total_pages):
 		url_array.append(str.format(baseURL + "/post?page={}&tags={}", page_number, tag_list))
 	return url_array
@@ -36,11 +55,10 @@ def DANBOORU_URL_GEN(total_pages : int, tag_list : list[str]) -> list[str]:
 
 URL_GEN_TO_SITE_PARSE = {}
 URL_GEN_TO_SITE_PARSE[KONACHAN_URL_GEN] = KONACHAN_SITE
-URL_GEN_TO_SITE_PARSE[YANDERE_URL_GEN] = DANBOORU_SITE
-URL_GEN_TO_SITE_PARSE[DANBOORU_URL_GEN] = GELBOORU_SITE
+URL_GEN_TO_SITE_PARSE[YANDERE_URL_GEN] = YANDERE_SITE
+URL_GEN_TO_SITE_PARSE[DANBOORU_URL_GEN] = DANBOORU_SITE
 
 # FOR DEBUG
-import os
 def WriteOutDebugInfo(urls_dict : dict, filename="output.json") -> None:
 	try:
 		os.remove(filename)

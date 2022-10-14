@@ -1,11 +1,13 @@
 
 import os
-from threading import Thread
-from libs import thread, io, scrape, utility, websites
+from libs import thread, utility, websites
 
-THREAD_COUNT = 100
+THREAD_COUNT = 10
 
-# GET TAGS LIST
+# ============================================================
+websites.DIRECTORY_PATH = utility.AskForStoreDirectory(parent_spec_file=__file__)
+
+# ============================================================
 total_pages : int = utility.GetInputOfType("How many pages are to be searched? ", int)
 search_tags : list = []
 while True:
@@ -21,15 +23,14 @@ while True:
 		search_tags.append(input_tag)
 os.system('cls||clear')
 
+# ============================================================
 print("Removing singular tag values from tag array.")
 search_tags = utility.PowerSet(search_tags)
 if len(search_tags) > 1: # if there is more than 1 tag
 	utility.FilterMinListCountFromList(search_tags, minimum_length=2)
 
-print("Searching ", total_pages, " pages.", "\n Tags: ", search_tags)
-
+# ============================================================
 print("Resolving URLs")
-
 urls = {}
 for URL_GEN in websites.URL_GEN_TO_SITE_PARSE:
 	SITE_PARSE_FUNC = websites.URL_GEN_TO_SITE_PARSE[URL_GEN]
@@ -42,7 +43,9 @@ for URL_GEN in websites.URL_GEN_TO_SITE_PARSE:
 
 websites.WriteOutDebugInfo(urls, filename="output.json")
 
-print("Starting Download Threads")
+# ============================================================
+print("Searching ", total_pages, " pages.", "\n Tags: ", search_tags)
+print("Starting Scanning & Download Threads")
 def Parse(PARSER):
 	for arguments in urls.get(PARSER):
 		print("==========================================================")
@@ -54,4 +57,4 @@ for PARSER in urls:
 	DICT_INDEXES.append(PARSER)
 thread.CompleteThreadTask(parent_function=Parse, arguments_array=DICT_INDEXES, worker_count=THREAD_COUNT)
 
-print("Finished.")
+print("Finished")

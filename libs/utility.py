@@ -1,9 +1,9 @@
 import os
 
 # Ask user for the storage directory
-def AskForStoreDirectory() -> str:
+def AskForStoreDirectory(parent_spec_file=__file__) -> str:
 	os.system('cls||clear')
-	directory = '/'.join(__file__.split("\\")[0:-1]) + "/" + input("Enter the container name. ")
+	directory = '/'.join(parent_spec_file.split("\\")[0:-1]) + "/" + input("Enter the container name. ")
 	try: 
 		os.makedirs(directory)
 	except:

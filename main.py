@@ -2,7 +2,7 @@
 import os
 from libs import thread, utility, websites
 
-THREAD_COUNT = 10
+THREAD_COUNT = 100
 
 # ============================================================
 websites.DIRECTORY_PATH = utility.AskForStoreDirectory(parent_spec_file=__file__)

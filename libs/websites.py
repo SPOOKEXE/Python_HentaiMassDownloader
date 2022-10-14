@@ -1,11 +1,19 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 
-from libs import scrape, io
+from libs import scrape, io, thread
 
 import time, os
 
 DIRECTORY_PATH = "."
+SCRAPE_WORKER_COUNT = 25
+
+# Scrape the page and download the images
+def SCRAPE_PAGE(page_url):
+	global DIRECTORY_PATH
+	for url in scrape.ScrapeMedia(page_url):
+		print(page_url)
+		scrape.DownloadImageMedia(url, DIRECTORY_PATH)
 
 # Website Scanning
 def FORMAT_1_SCRAPE(base_url, argument):
@@ -17,12 +25,7 @@ def FORMAT_1_SCRAPE(base_url, argument):
 		href = link.get('href')
 		if href != None and href.find("/post/show/") != -1:
 			page_urls.append(base_url + href)
-
-	for page_url in page_urls:
-		for url in scrape.ScrapeMedia( page_url):
-			print(page_url)
-			scrape.DownloadImageMedia(url, filepath=DIRECTORY_PATH)
-		time.sleep(1)
+	thread.CompleteThreadTask(SCRAPE_PAGE, page_urls, worker_count=SCRAPE_WORKER_COUNT)
 
 def KONACHAN_SITE(argument):
 	print("KONACHAN - ", argument)

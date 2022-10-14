@@ -8,18 +8,16 @@ from libs.io import SaveImageData
 DEFAULT_MEDIA_TYPE_WHITELIST = [".png", ".jpg", ".webp"]
 
 # Download an Image file
-def DownloadImageMedia( MediaURL : str, filepath=None ) -> None:
+def DownloadImageMedia( MediaURL : str, filepath ) -> None:
 	response = requests_get(MediaURL)
 	filename = MediaURL[MediaURL.rfind("/")+1:len(MediaURL)]
 	if filename.find(".") == -1: # if no extension, add one
 		filename = filename + ".png"
-	if filepath == None:
-		filepath = "."
 	full_path = filepath + "/" + filename
-	print(full_path)
+	# print(full_path)
 	SaveImageData(response.content, filepath=full_path, quality=80, optimize=True)
-	# with open(full_path, "wb") as file:
-	# 	file.write(response.content)
+	with open(full_path, "wb") as file:
+		file.write(response.content)
 
 # Check if its a valid image
 def IsURLAnImage(URL : str, whitelist=DEFAULT_MEDIA_TYPE_WHITELIST) -> bool:

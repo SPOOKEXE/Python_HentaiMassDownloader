@@ -12,13 +12,14 @@ SCRAPE_WORKER_COUNT = 25
 def SCRAPE_PAGE(page_url):
 	global DIRECTORY_PATH
 	for url in scrape.ScrapeMedia(page_url):
-		print(page_url)
+		# print(page_url)
 		scrape.DownloadImageMedia(url, DIRECTORY_PATH)
 
 # Website Scanning
+from http.client import HTTPResponse
 def FORMAT_1_SCRAPE(base_url, argument):
-	print(argument)
-	response = urlopen(argument)
+	response : HTTPResponse = urlopen(argument)
+	# print(response.status, argument)
 	soup = BeautifulSoup(response, "html.parser")
 	page_urls = []
 	for link in soup.findAll('a'):

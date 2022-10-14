@@ -27,9 +27,14 @@ def IsURLAnImage(URL : str, whitelist=DEFAULT_MEDIA_TYPE_WHITELIST) -> bool:
 	return False
 
 # Returns a list of urls that point to the direct image data
+import urllib.request as req
+from http.client import HTTPResponse
+
 def ScrapeMedia(url : str) -> list[str]:
 	media_urls = []
-	soup = BeautifulSoup(urlopen(url), "html.parser")
+	response : HTTPResponse = urlopen(url)
+	print(response.status, url)
+	soup = BeautifulSoup(response, "html.parser")
 	for link in soup.findAll('a'):
 		href : str = link.get('href')
 		if href != None and IsURLAnImage(href, whitelist=DEFAULT_MEDIA_TYPE_WHITELIST):

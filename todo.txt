@@ -1,0 +1,31 @@
+def LUSCIOUS_PageSearch(tags : list) -> None:
+	global thread_count
+	for page_number in range(total_pages):
+		picture_page_urls : list = []
+		joined_tags : str = "%2B".join(tags)
+		grid_collection_url : str = str.format("https://www.luscious.net/albums/list/?album_type=manga&display=date_trending&restrict_genres=loose&tagged={}&search_query=&page={}", page_number, joined_tags)
+		soup = BeautifulSoup(urllib.request.urlopen(grid_collection_url), "html.parser")
+		for link in soup.findAll('a'):
+			href = link.get('href')
+			if href != None and href.find("/albums/") != -1:
+				picture_page_urls.append("https://www.luscious.net/" + href)
+		for page_url in picture_page_urls:
+			print(page_url)
+			downloadThread(page_url).start()
+			time.sleep(2.5)
+
+def GELBOORU_PageSearch(tags : list) -> None:
+	global thread_count
+	for page_number in range(total_pages):
+		picture_page_urls : list = []
+		joined_tags : str = "+".join(tags)
+		grid_collection_url : str = str.format("https://gelbooru.com/index.php?page=post&s=list&tags={}&pid={}", joined_tags, page_number * 42)
+		soup = BeautifulSoup(urllib.request.urlopen(grid_collection_url), "html.parser")
+		for link in soup.findAll('a'):
+			href = link.get('href')
+			if href != None and href.find("https://gelbooru.com/index.php?page=post&s=view") != -1:
+				picture_page_urls.append(href)
+		for page_url in picture_page_urls:
+			print(page_url)
+			downloadThread(page_url).start()
+			time.sleep(2.)
